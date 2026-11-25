@@ -56,6 +56,8 @@ def replies():
         print("replied", path); n += 1
         if n >= 10: break
 def post():
+    if os.path.exists("ig_paused"):   # Metaに止められている間は、無理に試さない(ブロックが深くなるのを防ぐ)
+        print("instagram paused:", open("ig_paused").read().strip()); return
     now = datetime.datetime.now(datetime.timezone.utc)
     for path in sorted(glob.glob("queue/*.json")):
         it = json.load(open(path, encoding="utf-8")); ig = it.get("instagram")
