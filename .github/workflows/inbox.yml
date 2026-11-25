@@ -1,7 +1,7 @@
 name: x-inbox
 on:
   schedule:
-    - cron: "37 10 * * *"   # 毎日 19:37 JST に、Xのリプライを取ってくる(返信は Claude が毎日の作業で書く)
+    - cron: "37 10 * * *"   # 毎日 19:37 JST に、XのリプライとInstagramのコメントを取ってくる(返信は Claude が毎日の作業で書く)
   push:
     branches: [main]
     paths: [".github/check-inbox"]
@@ -23,6 +23,10 @@ jobs:
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         run: python scripts/x_inbox.py
+      - env:
+          IG_USER_ID: "17841449489547980"
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/post_ig.py inbox
       - run: |
           git config user.name "yomigaere-bot"; git config user.email "bot@users.noreply.github.com"
           git add inbox; git diff --cached --quiet || (git commit -m "x inbox" && git pull --rebase && git push)
