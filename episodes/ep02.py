@@ -49,6 +49,7 @@ fg+=''.join(f'<circle cx="{x}" cy="{y}" r="8" fill="#f6efd0"/><circle cx="{x-2}"
 P.append(panel(bg,fg,8,u))
 json.dump(P,open('ep02_panels.json','w'),ensure_ascii=False)
 
+REEL={'mood':['dark','light','light','light','light','light','light','dark'],'sfx':{1:'sparkle',2:'splash',5:'sparkle',6:'gulp'}}
 if __name__=='__main__':
     import asyncio, sheets, os
     os.makedirs('out',exist_ok=True)

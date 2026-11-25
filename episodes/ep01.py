@@ -116,6 +116,7 @@ fg+=g(TT('blank'),280,380,1.1,25)+bubbles(u,22,180,420,40,330,21)+sweat(370,290,
 P.append(panel(bg,fg,12,u))
 json.dump(P,open('ep01_panels.json','w'),ensure_ascii=False)
 
+REEL={'mood':['light','dark','dark','dark','dark','dark','light','light','light','light','light','dark'],'sfx':{4:'stamp',5:'sparkle',6:'crack',7:'pop',9:'sparkle',10:'splash'}}
 if __name__=='__main__':
     import asyncio, sheets, os
     os.makedirs('out',exist_ok=True)

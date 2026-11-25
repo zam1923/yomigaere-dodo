@@ -63,7 +63,10 @@ def main(ep,title,memo):
         panels=asyncio.run(render_panels(P,tmp,title,memo))
         frames(panels,title,memo,tmp)
         out=os.path.join(ROOT,'reels',f'{ep}.mp4')
-        subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate',str(FPS),'-i',f'{tmp}/f%05d.jpg','-f','lavfi','-i','anullsrc=r=44100:cl=stereo','-shortest',
-                        '-c:v','libx264','-preset','veryfast','-crf','22','-pix_fmt','yuv420p','-c:a','aac','-b:a','64k','-movflags','+faststart',out],check=True)
+        import sound
+        R=getattr(mod,'REEL',{}); moods=R.get('mood',['light']*len(P)); fx=R.get('sfx',{})
+        sound.make(f'{tmp}/a.wav',SEC,3.5,moods,fx)
+        subprocess.run(['ffmpeg','-y','-loglevel','error','-framerate',str(FPS),'-i',f'{tmp}/f%05d.jpg','-i',f'{tmp}/a.wav','-shortest',
+                        '-c:v','libx264','-preset','veryfast','-crf','22','-pix_fmt','yuv420p','-c:a','aac','-b:a','128k','-movflags','+faststart',out],check=True)
     print(out)
 if __name__=='__main__': main(*sys.argv[1:4])
