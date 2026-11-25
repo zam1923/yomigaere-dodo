@@ -5,12 +5,15 @@ import envs, turn, logoIntact
 from ep1b import eyes_sparkle
 TT=lambda k='n': ch('トト',k)
 def sailor(x,y,s=1):
-    # 低い視点から見上げた、17世紀の船乗りの下半身と棒(影)
     c=SIL
     o=f'<g transform="translate({x} {y}) scale({s})" fill="{c}">'
-    o+='<path d="M-70 -520 L70 -520 L88 -250 Q60 -236 30 -244 L22 -40 L50 -20 L50 0 L-6 0 L-2 -40 L-10 -240 L-30 -40 L-24 0 L-80 0 L-80 -20 L-52 -40 L-60 -246 Q-84 -250 -92 -262Z"/>'
-    o+='<path d="M80 -330 L96 -320 L-160 -30 L-176 -40Z"/>'   # 棒
-    o+='<ellipse cx="84" cy="-330" rx="22" ry="16"/>'
+    o+='<path d="M-66 -560 L66 -560 L74 -330 Q96 -260 118 -196 L-118 -196 Q-96 -260 -74 -330Z"/>'   # 長いコート
+    o+='<rect x="-62" y="-210" width="44" height="180"/><rect x="18" y="-210" width="44" height="180"/>'  # 脚
+    o+='<path d="M-80 -40 L-10 -40 L-6 0 L-92 0Z"/><path d="M10 -40 L80 -40 L94 0 L6 0Z"/>'  # ブーツ
+    o+='<rect x="-74" y="-352" width="148" height="16" fill="#1c1512"/>'  # ベルト
+    o+='<path d="M58 -520 Q118 -440 104 -330" fill="none" stroke="'+c+'" stroke-width="34" stroke-linecap="round"/>'  # 腕
+    o+='<circle cx="104" cy="-326" r="22"/>'  # こぶし
+    o+='<path d="M96 -340 L118 -326 L-188 -12 L-206 -26Z"/>'  # 棒
     return o+'</g>'
 def footprint(x,y,s=1,rot=0): return f'<path transform="translate({x} {y}) rotate({rot}) scale({s})" d="M0 0 L-9 -14 M0 0 L0 -17 M0 0 L9 -14 M0 0 L0 7" stroke="#8a7357" stroke-width="3.4" stroke-linecap="round" fill="none" opacity=".75"/>'
 def feather(u,x,y,s=1,rot=-20):
@@ -37,7 +40,7 @@ logo=logo.replace('<svg viewBox="0 0 900 440" width="900" height="440"','<svg vi
 P.append(f'<svg viewBox="0 0 1000 560" width="1000" height="560" xmlns="http://www.w3.org/2000/svg"><defs>{FILT}<clipPath id="cT"><rect x="4" y="4" width="992" height="552" rx="6"/></clipPath></defs><g clip-path="url(#cT)">{logo}</g><rect x="4" y="4" width="992" height="552" rx="6" fill="none" stroke="{O}" stroke-width="6" filter="url(#hand)"/></svg>')
 # 2 1662年、夕暮れの浜にトトが1羽
 u='p2'; bg=envs.island(u)+dusk(u)+f'<circle cx="160" cy="250" r="40" fill="#f6d38a" opacity=".85"/>'+ship(u,760,256,1.0)
-fg=g(turn.three(),470,410,0.75)+''.join(footprint(x,y,.8,90) for x,y in [(300,470),(350,478),(400,470)])+cap(24,24,'1662年　モーリシャス島')
+fg=g(turn.three(),470,410,0.75,0,True)+''.join(footprint(x,y,.8,90) for x,y in [(300,470),(350,478),(400,470)])+cap(24,24,'1662年　モーリシャス島')
 P.append(panel(bg,fg,2,u))
 # 3 棒を持った人間の影。トトはキラキラ目で近づく
 u='p3'; bg=envs.island(u)+dusk(u)+f'<rect width="{W}" height="{H}" fill="#3b2a3a" opacity=".18"/>'
@@ -46,7 +49,7 @@ fg+=f'<path d="M460 330 q30 -8 50 4 M462 360 q30 0 50 10" fill="none" stroke="{O
 P.append(panel(bg,fg,3,u))
 # 4 だれもいない浜。足あとが途切れ、羽根が1枚
 u='p4'; bg=envs.island(u)+dusk(u)+f'<rect width="{W}" height="{H}" fill="#2e2440" opacity=".25"/>'+ship(u,560,252,1.2)
-fg=''.join(footprint(x,y,.9,90) for x,y in [(120,460),(180,470),(240,460),(300,470),(360,460),(420,470)])+feather(u,560,480,.9,-10)
+fg=''.join(footprint(x,y,.9,90) for x,y in [(120,460),(180,470),(240,460),(300,470),(360,460),(420,470)])+''.join(f'<ellipse cx="{x}" cy="{y}" rx="26" ry="11" transform="rotate(-8 {x} {y})" fill="#6f5a46" opacity=".45"/>' for x,y in [(960,500),(880,470),(800,505),(720,476),(640,500),(560,474),(500,500)])+feather(u,620,420,.9,-10)
 P.append(panel(bg,fg,4,u))
 # 5 暗いコマ。人間の手の影が、ページに「絶滅」のハンコを押す
 u='p5'; bg=f'<rect width="{W}" height="{H}" fill="#241e1b"/><radialGradient id="lp{u}" cx=".45" cy=".6" r=".55"><stop offset="0" stop-color="#e9d9b0" stop-opacity=".55"/><stop offset="1" stop-color="#241e1b" stop-opacity="0"/></radialGradient><rect width="{W}" height="{H}" fill="url(#lp{u})"/>'
@@ -54,8 +57,12 @@ page='M180 300 L700 270 L760 520 L200 560Z'
 fg=wash(u,page,'#efe2c3')+pen(u,page,2)
 fg+=''.join(pen(u,f'M{230+i*4} {330+i*24} L{520+i*4} {316+i*24}',1.4,INK,op=.5) for i in range(6))
 fg+=f'<g transform="translate(330 440) rotate(-6) scale(.62)" opacity=".55">{sil(turn.side())}</g>'
-fg+=f'<g filter="url(#ink{u})" opacity=".92"><g transform="rotate(-10 560 430)"><circle cx="560" cy="430" r="52" fill="none" stroke="#c4473a" stroke-width="7"/><circle cx="560" cy="430" r="41" fill="none" stroke="#c4473a" stroke-width="2.6"/><text x="560" y="447" text-anchor="middle" font-family="{F}" font-weight="900" font-size="40" fill="#c4473a">絶滅</text></g></g>'
-fg+=f'<path d="M600 0 L760 0 L700 300 Q660 330 620 300Z" fill="#0e0b0a"/><rect x="600" y="290" width="110" height="40" rx="8" fill="#0e0b0a"/>'
+fg+=f'<g filter="url(#ink{u})" opacity=".92"><g transform="rotate(-10 600 440)"><circle cx="600" cy="440" r="52" fill="none" stroke="#c4473a" stroke-width="7"/><circle cx="600" cy="440" r="41" fill="none" stroke="#c4473a" stroke-width="2.6"/><text x="600" y="457" text-anchor="middle" font-family="{F}" font-weight="900" font-size="40" fill="#c4473a">絶滅</text></g></g>'
+fg+='<path d="M560 0 L760 0 L730 150 L600 170Z" fill="#0e0b0a"/>'  # 袖
+fg+='<path d="M590 160 Q600 120 650 118 Q720 116 742 150 Q760 196 730 226 Q690 250 640 240 Q596 228 590 190Z" fill="#0e0b0a"/>'  # こぶし
+fg+=''.join(f'<path d="M{x} 150 q10 30 0 64" fill="none" stroke="#2a221d" stroke-width="3"/>' for x in (630,660,690,715))
+fg+='<rect x="638" y="228" width="44" height="66" rx="8" fill="#3a2e27"/><rect x="600" y="290" width="120" height="26" rx="6" fill="#3a2e27"/><rect x="606" y="314" width="108" height="8" fill="#c4473a"/>'  # ハンコ
+fg+=''.join(f'<path d="M{x} 340 l{d} 14" stroke="#e9d9b0" stroke-width="3" stroke-linecap="round" opacity=".7"/>' for x,d in [(616,-6),(660,0),(704,6)])
 P.append(panel(bg,fg,5,u))
 # 6 真っ黒。光がひとつ落ちてくる
 u='p6'; bg=f'<rect width="{W}" height="{H}" fill="#0c0b10"/>'
@@ -63,7 +70,7 @@ fg=f'<path d="M500 -10 L500 380" stroke="#fff3c4" stroke-width="12" stroke-linec
 P.append(panel(bg,fg,6,u))
 # 7 約5億年前。草も木もない岩の浜に、ハンコつきのたまご
 u='p7'; bg=barren(u)
-fg=obj(u,'egg',560,400,0.62,6)+f'<ellipse cx="560" cy="482" rx="70" ry="10" fill="#4a3f36" opacity=".35"/>'+cap(24,24,'約5億年前')+wind(120,140,3,140)
+fg=obj(u,'egg',560,380,0.85,6)+f'<ellipse cx="560" cy="486" rx="90" ry="12" fill="#4a3f36" opacity=".35"/>'+cap(24,24,'約5億年前')+wind(120,140,3,140)
 P.append(panel(bg,fg,7,u))
 # 8 アップ。ヒビが「絶滅」をまっぷたつに
 u='p8'; P.append(panel(cream(),burst(500,280,52,250,700)+obj_crack(u,'egg'),8,u))
@@ -74,13 +81,13 @@ fg+=f'<g stroke="{O}" stroke-width="3" stroke-linecap="round" fill="none"><path 
 P.append(panel(bg,fg,9,u))
 # 10 大きく引いた絵。どこまでも岩と風だけ、トトは豆粒
 u='p10'; bg=barren(u)
-fg=g(turn.front(),520,430,0.22)+wind(140,120,3,180)+wind(640,200,2,160)+f'<path d="M505 395 q-4 -10 6 -14" fill="none" stroke="{O}" stroke-width="2"/>'
+fg=f'<ellipse cx="520" cy="468" rx="26" ry="6" fill="#4a3f36" opacity=".35"/>'+g(turn.front(),520,430,0.34)+wind(140,120,3,180)+wind(640,200,2,160)+f'<path d="M505 395 q-4 -10 6 -14" fill="none" stroke="{O}" stroke-width="2"/>'
 P.append(panel(bg,fg,10,u))
 # 11 潮だまりをのぞく。見たことのない形の影たち。キラキラ目
 u='p11'; bg=barren(u)
 pool='M380 380 Q600 330 900 370 Q960 450 860 520 Q620 560 420 520 Q330 460 380 380Z'
 fg=wash(u,pool,'#7fa6a6')+pen(u,pool,3)
-fg+=f'<clipPath id="pl{u}"><path d="{pool}"/></clipPath><g clip-path="url(#pl{u})" opacity=".85">'+g(sil(ch('ハルル')),520,470,.35)+g(sil(ch('オパ')),720,440,.3,0,True)+''.join(f'<path transform="translate({x} {y}) scale(.8)" d="M0 -20 Q22 -18 24 0 Q22 22 0 26 Q-22 22 -24 0 Q-22 -18 0 -20Z" fill="{SIL}"/>' for x,y in [(640,500),(800,480),(460,420)])+'</g>'
+fg+=f'<clipPath id="pl{u}"><path d="{pool}"/></clipPath><g clip-path="url(#pl{u})" opacity=".85">'+g(sil(ch('ハルル')),520,470,.6)+g(sil(ch('オパ')),760,440,.55,0,True)+''.join(f'<path transform="translate({x} {y}) scale(.8)" d="M0 -20 Q22 -18 24 0 Q22 22 0 26 Q-22 22 -24 0 Q-22 -18 0 -20Z" fill="{SIL}"/>' for x,y in [(640,500),(800,480),(460,420)])+'</g>'
 fg+=g(TT('spark'),230,320,1.5,14)+twinkle(400,180,1)+twinkle(120,160,.8)
 P.append(panel(bg,fg,11,u))
 # 12 そのまま水に飛びこんで、しずむ。泡の向こうに大きな2つの目

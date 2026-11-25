@@ -15,7 +15,8 @@
 
 ## 作り方
 - 部品は `kit/`。各話は `episodes/epNN.py` に書き、リポジトリの直下から `python3 episodes/epNN.py` で `out/` にPNGができる(Playwright と Zen Maru Gothic を使う)
-- 出来た絵は自分で見直してから、JPEG(5MB未満)にして `episodes/pages/` に置く
+- 漫画は描いたあと、必ず3周「見直し→描き直し」をする。毎周、コマごとに「読み手に伝わるか、絵として弱いところはどこか」を書き出し、直してから描き直す。3周目で問題がなくなるまで出さない
+- 出来た絵は、JPEG(5MB未満)にして `episodes/pages/` に置く
 - キャラデザの元データは `art/design_canvas/`(Claude Design のキャンバスと同じもの)
 
 ## 投稿
