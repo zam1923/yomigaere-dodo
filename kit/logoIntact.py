@@ -35,7 +35,7 @@ def ship(u,x,y,s=1):
     o+=f'<path d="M{x+4*s} {y-78*s} l12 3 l-12 3Z" fill="#c4473a"/>'
     o+=pen(u,f'M{x-40*s} {y-10*s} L{x-56*s} {y-22*s}',1.2,ink)
     return o
-def B3i(u):
+def B3i(u,bare=False):
     r=random.Random(21); s=''
     s+=f'''<defs><linearGradient id="skB{u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efe2c2"/><stop offset=".55" stop-color="#f6ecd4"/><stop offset="1" stop-color="#f3e6c6"/></linearGradient>
 <radialGradient id="vg{u}" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#5a4128" stop-opacity=".35"/></radialGradient>
@@ -90,9 +90,9 @@ def B3i(u):
     st=f'<g transform="rotate(-12 0 10)"><circle cx="0" cy="10" r="42" fill="none" stroke="#c4473a" stroke-width="5"/><circle cx="0" cy="10" r="33" fill="none" stroke="#c4473a" stroke-width="2"/><text x="0" y="23" text-anchor="middle" font-family="{F}" font-weight="900" font-size="31" fill="#c4473a">絶滅</text></g>'
     fg+=f'<g transform="translate(700 250) rotate(6) scale(.95)"><path d="{EG}" fill="url(#egB{u})"/>{sp}<g filter="url(#ink{u})" opacity=".9">{st}</g><path d="{EG}" fill="none" stroke="{O}" stroke-width="4.2" filter="url(#pn{u})"/><path d="M58 -40 Q74 0 64 40" fill="none" stroke="#fffdf6" stroke-width="5" stroke-linecap="round" opacity=".8"/></g>'
     fg+=f'<g>{nest}</g>'
-    s+=f'<g transform="translate(0 30)">{fg}</g>'
+    s+=('' if bare else f'<g transform="translate(0 30)">{fg}</g>')
     s+=f'<rect width="900" height="440" fill="url(#vg{u})"/>'
     # 古い版画の枠
     s+=f'<rect x="12" y="12" width="876" height="416" rx="18" fill="none" stroke="#6b5444" stroke-width="2" opacity=".55"/><rect x="20" y="20" width="860" height="400" rx="14" fill="none" stroke="#6b5444" stroke-width="1" opacity=".45"/>'
     top=T(290,120,'よみがえれ、',56,'#fff8ee',11,6)+T(300,240,'ドードー',116,'#a9bdb6',14,4)+tw(70,80,.9)+tw(540,70,.8)
-    return wrap(u,s,'#f3e6c6',top)
+    return wrap(u,s,'#f3e6c6','' if bare else top)
