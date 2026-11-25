@@ -1,5 +1,6 @@
 """LINEスタンプ第1弾: トトの8種(文字なし)。python3 stamps/make_set1.py で stamps/set1/ にPNGができる"""
-import sys,os,asyncio
+import sys,os,asyncio,zipfile
+from PIL import Image
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','kit'))
 import gen
 from ep1b import heart, twinkle, bang
@@ -22,14 +23,25 @@ async def main():
     out=os.path.join(os.path.dirname(os.path.abspath(__file__)),'set1')
     async with async_playwright() as p:
         b=await p.chromium.launch()
-        async def shot(inner,w,h,vb,path):
-            pg=await b.new_page(viewport={'width':w,'height':h})
-            await pg.set_content(f'<html><body style="margin:0;background:transparent">{svg(inner,w,h,vb)}</body></html>')
-            await pg.screenshot(path=path,omit_background=True); await pg.close()
+        async def shot(inner,w,h,vb,path,margin=10,k=None):
+            # 大きく描いてから、絵の外枠ぎりぎりで切り抜き、余白10pxを残して枠いっぱいに収める
+            pg=await b.new_page(viewport={'width':1200,'height':1200})
+            await pg.set_content(f'<html><body style="margin:0;background:transparent">{svg(inner,1200,1200,"-120 -120 440 440")}</body></html>')
+            raw=path+'.raw.png'; await pg.screenshot(path=raw,omit_background=True); await pg.close()
+            im=Image.open(raw).convert('RGBA'); os.remove(raw); im=im.crop(im.getchannel('A').getbbox())
+            k=k or min((w-2*margin)/im.width,(h-2*margin)/im.height); im=im.resize((round(im.width*k),round(im.height*k)),Image.LANCZOS)
+            c=Image.new('RGBA',(w,h),(0,0,0,0)); c.paste(im,((w-im.width)//2,(h-im.height)//2),im); c.save(path,dpi=(72,72))
+            return min((w-2*margin)/im.width*k,(h-2*margin)/im.height*k)
+        # 8種でトトの大きさをそろえる: いちばん縮める必要のある子の倍率に合わせる
+        ks=[await shot(body(k)+fx,370,320,'',f'{out}/{name}.png') for name,k,fx in SET]
         for name,k,fx in SET:
             # 370x320、上下左右に10px以上の余白。キャラは中央
-            await shot(body(k)+fx,370,320,'-32 -22 264 228',f'{out}/{name}.png')
+            await shot(body(k)+fx,370,320,'',f'{out}/{name}.png',k=min(ks))
         await shot(body('smile')+heart(165,45,1.0,12),240,240,'-12 -14 224 224',f'{out}/main.png')
-        await shot(gen.CREST+gen.HEAD+gen.BEAK+gen.face('n') if hasattr(gen,'face') else body('n'),96,74,'-14 24 228 176',f'{out}/tab.png')
+        await shot(gen.CREST+gen.HEAD+gen.BEAK+gen.face('n') if hasattr(gen,'face') else body('n'),96,74,'-14 24 228 176',f'{out}/tab.png',margin=2)
         await b.close()
+    # 申請用ZIP: 01.png〜08.png, main.png, tab.png
+    with zipfile.ZipFile(os.path.join(out,'..','set1_line.zip'),'w') as z:
+        for i,(name,_,_) in enumerate(SET,1): z.write(f'{out}/{name}.png',f'{i:02d}.png')
+        z.write(f'{out}/main.png','main.png'); z.write(f'{out}/tab.png','tab.png')
 asyncio.run(main())

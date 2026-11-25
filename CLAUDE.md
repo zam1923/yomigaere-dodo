@@ -26,7 +26,7 @@
 
 ## ほかの媒体
 - リール動画: 漫画を描いたら `python3 kit/reel.py epNN "第N話　タイトル" "図鑑メモ"` で `reels/epNN.mp4` を作り(音はBGMと効果音を kit/sound.py で一から合成。各話ファイルの REEL に、コマごとの明暗 mood と効果音 sfx を書く。市販の曲や素材は使わない)、その話のキューに `"instagram": {"video": ..., "caption": ...}` を足す。Instagramのキー(IG_USER_ID / IG_ACCESS_TOKEN)が Secrets に入るまでは、自動で飛ばされる
-- LINEスタンプ: `stamps/`。第1弾はトト8種(`stamps/set1/`、`python3 stamps/make_set1.py`)。申請はとりおがLINE Creators Marketで行う。仲間が増えたら、その子を入れた弾を作って知らせる
+- LINEスタンプ: `stamps/`。第1弾はトト8種(`stamps/set1/`、`python3 stamps/make_set1.py` で申請用 `stamps/set1_line.zip` もできる。文言は `stamps/set1_listing.md`)。8種でキャラの大きさをそろえ、余白10pxで枠いっぱいに描く。申請はとりおがLINE Creators Marketで行う。仲間が増えたら、その子を入れた弾を作って知らせる
 - 反応レポート: GitHub Actions `monthly-report` が毎月1日に `reports/YYYY-MM.md` を作る。毎週の制作では最新のレポートを読み、よく見られた種類やキャラを次の週に反映する
 
 ## 投稿
