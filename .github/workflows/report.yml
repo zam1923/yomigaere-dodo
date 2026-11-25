@@ -1,0 +1,24 @@
+name: monthly-report
+on:
+  schedule:
+    - cron: "17 3 1 * *"   # 毎月1日 12:17 JST
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests requests-oauthlib
+      - env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/report_x.py
+      - run: |
+          git config user.name "yomigaere-bot"; git config user.email "bot@users.noreply.github.com"
+          git add reports; git diff --cached --quiet || (git commit -m "monthly report" && git pull --rebase && git push)

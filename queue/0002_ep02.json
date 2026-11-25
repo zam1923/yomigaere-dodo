@@ -1,10 +1,14 @@
 {
   "when": "2026-11-28T21:00:00+09:00",
-  "text": "第2話　うみのなかの目\n\n#よみがえれドードー",
+  "text": "第2話　うみのなかの目\n\n#よみがえれドードー #絶滅動物 #漫画が読めるハッシュタグ",
   "images": [
     "episodes/pages/第2話_うみのなかの目_1.jpg",
     "episodes/pages/第2話_うみのなかの目_2.jpg"
   ],
   "approved": true,
-  "posted_id": null
+  "posted_id": null,
+  "instagram": {
+    "video": "reels/ep02.mp4",
+    "caption": "第2話　うみのなかの目\n#よみがえれドードー #絶滅動物 #漫画"
+  }
 }

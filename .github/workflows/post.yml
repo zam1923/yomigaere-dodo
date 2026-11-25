@@ -30,9 +30,15 @@ jobs:
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         run: python scripts/post_x.py ${{ github.event_name == 'push' && 'check' || github.event.inputs.mode || 'post' }}
+      - name: instagram
+        if: ${{ github.event_name != 'push' }}
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/post_ig.py
       - name: record
         run: |
           git config user.name "yomigaere-bot"
           git config user.email "bot@users.noreply.github.com"
           git add queue
-          git diff --cached --quiet || (git commit -m "posted" && git push)
+          git diff --cached --quiet || (git commit -m "posted" && git pull --rebase && git push)
