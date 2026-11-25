@@ -31,11 +31,13 @@ jobs:
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
         run: python scripts/post_x.py ${{ github.event_name == 'push' && 'check' || github.event.inputs.mode || 'post' }}
       - name: instagram
+        continue-on-error: true   # Instagramで失敗しても、Xの記録は必ず残す
         env:
           IG_USER_ID: "17841449489547980"   # @yomigaere_dodo の番号(秘密ではない)
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: python scripts/post_ig.py ${{ github.event_name == 'push' && 'check' || github.event.inputs.mode || 'post' }}
       - name: record
+        if: always()
         run: |
           git config user.name "yomigaere-bot"
           git config user.email "bot@users.noreply.github.com"

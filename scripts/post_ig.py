@@ -19,7 +19,7 @@ def reel(video, caption):
     size = os.path.getsize(video)
     with open(video, "rb") as f:
         u = requests.post(f"https://rupload.facebook.com/ig-api-upload/{cid}", headers={"Authorization": f"OAuth {tok()}", "offset": "0", "file_size": str(size)}, data=f, timeout=600)
-    u.raise_for_status()
+    if not u.ok: raise RuntimeError(f"upload {u.status_code}: {u.text[:300]}")
     for _ in range(60):
         s = requests.get(f"{G}/{cid}", params={"fields": "status_code", "access_token": tok()}, timeout=30).json()
         if s.get("status_code") == "FINISHED": break
@@ -60,7 +60,13 @@ def post():
         it = json.load(open(path, encoding="utf-8")); ig = it.get("instagram")
         if not ig or not it.get("approved") or it.get("ig_posted_id"): continue
         if datetime.datetime.fromisoformat(it["when"]) > now: continue
-        it["ig_posted_id"] = reel(ig["video"], ig["caption"])
+        if it.get("ig_tries", 0) >= 3: continue   # 3回失敗したら、直すまで止める
+        try:
+            it["ig_posted_id"] = reel(ig["video"], ig["caption"])
+        except Exception as e:
+            it["ig_tries"] = it.get("ig_tries", 0) + 1; it["ig_error"] = str(e)[:300]
+            json.dump(it, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+            print("ig failed", path, e); return
         json.dump(it, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
         print("posted", path, it["ig_posted_id"]); return
     print("nothing due")
