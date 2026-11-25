@@ -1,0 +1,36 @@
+name: post-now
+on:
+  push:
+    branches: [main]
+    paths: [".github/run-post"]   # Claudeの毎日の合図(21:02)で、時刻の来た投稿をすぐ出す(GitHubの毎時実行が遅れるため)
+permissions:
+  contents: write
+concurrency: post-to-x
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests requests-oauthlib
+      - name: post
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+        run: python scripts/post_x.py post
+      - name: instagram
+        continue-on-error: true   # Instagramで失敗しても、Xの記録は必ず残す
+        env:
+          IG_USER_ID: "17841449489547980"   # @yomigaere_dodo の番号(秘密ではない)
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/post_ig.py post
+      - name: record
+        if: always()
+        run: |
+          git config user.name "yomigaere-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add queue
+          git diff --cached --quiet || (git commit -m "posted" && git pull --rebase && git push)

@@ -15,10 +15,10 @@ def check():
     print("expires_at", d.get("expires_at"), "(0 = never)")
 def reel(video, caption):
     r = requests.post(f"{G}/{uid()}/media", data={"media_type": "REELS", "upload_type": "resumable", "caption": caption, "share_to_feed": "true", "access_token": tok()}, timeout=60)
-    r.raise_for_status(); cid = r.json()["id"]
+    r.raise_for_status(); cid = r.json()["id"]; up = r.json().get("uri") or f"https://rupload.facebook.com/ig-api-upload/v25.0/{cid}"
     size = os.path.getsize(video)
     with open(video, "rb") as f:
-        u = requests.post(f"https://rupload.facebook.com/ig-api-upload/{cid}", headers={"Authorization": f"OAuth {tok()}", "offset": "0", "file_size": str(size)}, data=f, timeout=600)
+        u = requests.post(up, headers={"Authorization": f"OAuth {tok()}", "offset": "0", "file_size": str(size)}, data=f, timeout=600)
     if not u.ok: raise RuntimeError(f"upload {u.status_code}: {u.text[:300]}")
     for _ in range(60):
         s = requests.get(f"{G}/{cid}", params={"fields": "status_code", "access_token": tok()}, timeout=30).json()
