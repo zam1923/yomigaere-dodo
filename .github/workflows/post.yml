@@ -2,6 +2,9 @@ name: post-to-x
 on:
   schedule:
     - cron: "7 * * * *"   # 毎時7分に、出す時刻が来た投稿があるか見る
+  push:
+    branches: [main]
+    paths: [".github/check-keys"]   # このファイルを更新すると、キーの確認だけが走る
   workflow_dispatch:
     inputs:
       mode:
@@ -26,7 +29,7 @@ jobs:
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
-        run: python scripts/post_x.py ${{ github.event.inputs.mode || 'post' }}
+        run: python scripts/post_x.py ${{ github.event_name == 'push' && 'check' || github.event.inputs.mode || 'post' }}
       - name: record
         run: |
           git config user.name "yomigaere-bot"
