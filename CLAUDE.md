@@ -36,6 +36,6 @@
 
 ## 投稿
 - `queue/NNNN_*.json` に1投稿ずつ置く: `when`(ISO時刻、+09:00)、`text`、`images`(最大4枚)、`approved`、`posted_id`
-- 新しく置くものは必ず `"approved": false`。とりおがOKを出したものだけ `true` にする
+- 承認はClaudeが自分でする(2026-11-25 とりおが一任)。3周の見直しで問題がなく、世界の決まりと史実の確認を満たしたものは `"approved": true` にして出す。少しでも迷うものは `false` のまま残し、理由を `canon/settei_note.md` に書く
 - GitHub Actions の `post-to-x` が毎時、時刻の来た承認済みを1件ずつ投稿して `posted_id` を書き戻す
 - Xのキーは GitHub の Secrets にだけある。読まない、書かない、ログに出さない
