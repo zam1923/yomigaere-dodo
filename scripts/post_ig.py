@@ -11,6 +11,8 @@ def uid(): return os.environ["IG_USER_ID"]
 def check():
     r = requests.get(f"{G}/{uid()}", params={"fields": "username", "access_token": tok()}, timeout=30)
     print("status", r.status_code); print(r.json().get("username", r.text[:300])); r.raise_for_status()
+    d = requests.get(f"{G}/debug_token", params={"input_token": tok(), "access_token": tok()}, timeout=30).json().get("data", {})
+    print("expires_at", d.get("expires_at"), "(0 = never)")
 def reel(video, caption):
     r = requests.post(f"{G}/{uid()}/media", data={"media_type": "REELS", "upload_type": "resumable", "caption": caption, "share_to_feed": "true", "access_token": tok()}, timeout=60)
     r.raise_for_status(); cid = r.json()["id"]
