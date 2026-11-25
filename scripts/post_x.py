@@ -1,6 +1,7 @@
 """queue/ の投稿を X に出す。
 
 - approved が true で、posted_id が空で、when が過ぎたものを、古い順に1件だけ投稿する
+- reply_to(相手の投稿ID)がついたものは返信として出す。返信は1回に10件まで
 - 投稿したら posted_id と posted_at を書き戻す(コミットはワークフロー側)
 - `python scripts/post_x.py check` はキーが使えるかだけを確かめる(投稿しない)
 
@@ -45,22 +46,33 @@ def due_items():
             items.append((when, p, it))
     return sorted(items)
 
-def post():
-    items = due_items()
-    if not items:
-        print("nothing due"); return
-    _, path, it = items[0]
+def send(path, it):
     media_ids = [upload(img) for img in it.get("images", [])][:4]
     body = {"text": it["text"]}
     if media_ids:
         body["media"] = {"media_ids": media_ids}
+    if it.get("reply_to"):
+        body["reply"] = {"in_reply_to_tweet_id": str(it["reply_to"])}
     r = requests.post(f"{API}/tweets", auth=auth(), json=body, timeout=60)
     if not r.ok:
-        print("post failed", r.status_code, r.text[:500]); sys.exit(1)
+        print("post failed", path, r.status_code, r.text[:500]); return False
     it["posted_id"] = r.json()["data"]["id"]
     it["posted_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     json.dump(it, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
-    print("posted", path, it["posted_id"])
+    print("posted", path, it["posted_id"]); return True
+
+def post():
+    items = due_items()
+    # 返信(reply_to つき)は、時刻が来たものを1回に10件まで出す
+    for _, path, it in [x for x in items if x[2].get("reply_to")][:10]:
+        send(path, it)
+    # ふつうの投稿は1回に1件だけ
+    main = [x for x in items if not x[2].get("reply_to")]
+    if not main:
+        print("nothing due"); return
+    _, path, it = main[0]
+    if not send(path, it): sys.exit(1)
+    return
 
 if __name__ == "__main__":
     check() if (len(sys.argv) > 1 and sys.argv[1] == "check") else post()
