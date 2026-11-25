@@ -12,7 +12,7 @@ async def render(name,P,title,memo,logo_head=True,per=4):
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1080,'height':800}); out=[]
         for i,pp in enumerate(pages,1):
             head=((HEAD if logo_head else '')+f'<div style="padding:{"10" if logo_head else "30"}px 44px 6px;font-size:28px;font-weight:900">{title}</div>') if i==1 else ''
-            foot=(f'<div style="margin:24px 40px 14px;padding:18px 24px;background:#fff8ee;border-radius:18px;font-size:22px;line-height:1.7"><b>図鑑メモ</b><br>{memo}</div>' if i==tot else '<div style="text-align:center;padding:22px 0 4px;font-size:26px;font-weight:900;color:#9a8572">つづく →</div>')
+            foot=(f'<div style="margin:24px 40px 14px;padding:18px 24px;background:#fff8ee;border-radius:18px;font-size:22px;line-height:1.7"><b>図鑑メモ</b><br>{memo}</div><div style="text-align:center;padding:6px 0 4px;font-size:26px;font-weight:900;color:#9a8572">つづく</div>' if i==tot else '<div style="height:26px"></div>')
             open('/tmp/sh.html','w').write(page(pp,head,foot,i,tot))
             await pg.goto('file:///tmp/sh.html'); await pg.wait_for_timeout(2200)
             f=f'out/{name}_{i}.png'; await pg.screenshot(path=f,full_page=True); out.append(f)
