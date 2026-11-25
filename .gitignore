@@ -1,0 +1,7 @@
+# 描画のたびに作られる中間ファイル
+*.json
+!queue/*.json
+!art/design_canvas/**/*.json
+*_panels.txt
+out/
+__pycache__/
