@@ -1,7 +1,7 @@
 """queue/ の投稿のうち "instagram" を持つものを、Instagramのリールとして出す。
 - approved が true、ig_posted_id が空、when が過ぎたものを1件だけ
 - 動画は resumable upload で直接送る(公開URLは不要)。Facebookログイン(ビジネス)のアプリが前提
-- 環境変数: IG_USER_ID / IG_ACCESS_TOKEN (どちらも GitHub Secrets)
+- 環境変数: IG_USER_ID(workflowに直書き) / IG_ACCESS_TOKEN(GitHub Secrets)
 - `python scripts/post_ig.py check` はキーの確認だけ
 """
 import json, os, sys, glob, time, datetime, requests
